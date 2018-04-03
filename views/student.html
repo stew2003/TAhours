@@ -1,0 +1,83 @@
+<!Doctype html>
+<html>
+
+	<head>
+		<title>Student Homepage</title>
+		<!-- Include JQuery: -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<!-- Include Socket.io -->
+		<script src="/socket.io/socket.io.js"></script>
+		<!-- Include CSS: -->
+ 		<link rel="stylesheet" type="text/css" href="main.css">
+	</head>
+
+	<body>
+		<div id="header">
+			<h1>Student Homepage</h1>
+		</div>
+		<div id = "centerStudent">
+			<div id="questions">
+				<div id = "centerQuestions">
+					<div id = "nameDiv">
+						<label class='questionLabel'>
+							What is your name?
+							<input id = "name" type="text", placeholder="Name (first and last)"/>
+						</label>
+					</div>
+					<div id = "placeDiv">
+						<label class='questionLabel'>		
+							Where are you?			
+							<select id = "place">
+								<option value=""></option>
+	  							<option value="Ms. Robertson's office">Ms. Robertson's office</option>
+	  							<option value="CS back-room">CS back-room</option>
+	  							<option value="Cafeteria">Cafeteria</option>
+							</select>
+						</label>
+					</div>
+					<div id = "classDiv">
+						<label class='questionLabel'>
+							What class are you in?
+							<select id = "class">
+								<option value=""></option>
+	  							<option value="CSP">CSP</option>
+	  							<option value="Data Structures">Data Structures</option>
+	  							<option value="Software Engineering">Software Engineering</option>
+							</select>
+						</label>
+					</div>
+					<div id = "helpDiv">
+						<label class='questionLabel'>
+							What do you need help with?
+							<select id = "help">
+								<option value=""></option>
+	  							<option value="Python">Python</option>
+	  							<option value="Processing">Processing</option>
+	  							<option value="Javascript">Javascript</option>
+	  							<option value="Snap">Snap</option>
+							</select>
+						</label>
+					</div>
+					<div id="submitDiv">	
+						<button id="submit">Submit</button>
+					</div>
+				</div>
+			</div>
+			<div id="queue">
+				<div id = "title">
+					<h2> Student Queue </h2>
+				</div>
+				<div id = "listDiv">
+					<ul id="list">
+						{{#rows}} 
+							<li>{{name}}</li>
+						{{/rows}}
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- Main.js is "lazy loaded" after all other elements have loaded: -->
+		<script src="student.js"></script>
+	</body>
+
+</html>

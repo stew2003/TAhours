@@ -1,0 +1,41 @@
+<!Doctype html>
+<html>
+
+	<head>
+		<title>TA Staff</title>
+		<!-- Include JQuery: -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<!-- Include Socket.io -->
+		<script src="/socket.io/socket.io.js"></script>
+		<!-- Include CSS: -->
+ 		<link rel="stylesheet" type="text/css" href="main.css">
+
+	</head>
+
+	<body>
+		<div id="header">
+			<h1>TA Staff Homepage</h1>
+		</div>
+		<table id = "staffTable">
+			<tr id = 'topRow'>
+				<th></th>
+				<th>Name</th>
+				<th>Location</th>
+				<th>Class</th>
+				<th>Problem</th>
+			</tr>
+			{{#student}}
+				<tr>
+					<th> <img src="/redX.png"/> </th>
+					<th> {{name}} </th>
+					<th> {{place}} </th>
+					<th> {{class}} </th>
+					<th> {{help}} </th>
+				</tr>
+			{{/student}}
+		</table>
+		<!-- Main.js is "lazy loaded" after all other elements have loaded: -->
+		<script src="staff.js"></script>
+	</body>
+
+</html>
