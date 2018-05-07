@@ -11,24 +11,24 @@ var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var io = require('socket.io')(server);
 var auth = require('./auth');
+var middleware = require('./middleware.js');
 
 auth(passport);
 
 app.engine('html', mustache());
-app.use(passport.initialize());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static('views'));
-
+app.use(express.static('public'));
 app.use(cookieSession({
     name: 'session',
-    keys: ['123']
+    keys: ['TAhoursForSTABStudents']
 }));
-
 app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());  
 //end boilerplate
 
 conn.query("CREATE TABLE IF NOT EXISTS students (uid INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, place TEXT, class TEXT, help TEXT);");
-conn.query("CREATE TABLE IF NOT EXISTS admins (uid INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT);");
+conn.query("CREATE TABLE IF NOT EXISTS admins (uid INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT);");
 
 //add new student to database
 function addStud(student){
@@ -44,11 +44,33 @@ function getStudentInfo(callback){
 	});
 }
 
+function authenticateAdmin(email, request, response, callback){
+	conn.query("SELECT * FROM admins WHERE email = ?", [email], function(err, data){
+		if(err) throw err;
+		if (data.rows.length == 1){
+			request.user.isAdmin = true;
+			response.redirect('/admin');
+		}
+		else{
+			callback();
+		}
+	});
+}
+
+function authenticateStudent(domain, request, response){
+	if(domain == "students.stab.org"){
+		request.user.isStudent = true;
+		response.redirect('/student');
+	}
+	else{
+		
+	}
+}
+
 //socket handling
 io.on('connection', function(socket){
 	//on request to add new Student
 	socket.on('newStudent', function(student){
-		console.log('got it');
 		addStud(student);
 	});
 });
@@ -59,66 +81,33 @@ app.get('/auth/google', passport.authenticate('google', {
 
 app.get('/auth/google/callback',
     passport.authenticate('google', {
-        failureRedirect: '/login'
+        failureRedirect: '/auth/google'
     }),
     function(request, response){
-    	console.log(request);
-    	request.session.token = request.user.token;
-    	// authenticateAdmin(request, response);
+    	authenticateAdmin(request.user.profile.emails[0].value, request, response, function(){
+    		authenticateStudent(request.user.profile._json.domain, request, response);
+    	});
     }
 );
-
-app.get('/login', function(request, response){
-	response.render('login.html');
-});
-
-app.post('/authenticate', function(request, response){
-	if(request.body.yesOrNo == 'Yes'){
-		response.redirect('/auth/google');
-	}
-	else if(request.body.yesOrNo == 'No'){
-		response.redirect('/student');		
-	}
-	else{
-		response.redirect('/login');
-	}
-});
-
-app.get('/student', function(request, response){
+app.get('/student', middleware.isAuthenticated, function(request, response){
 	getStudentInfo(function(students){
 		response.render('student.html', students);
 	});
 });
 
-app.post('/teacher', function(request, response){
-
+app.get('/admin', middleware.isAuthenticated, middleware.isStaff, function(response, response){
+	response.send("Yo")
 });
 
-app.get('/', function(req, res){
-	 if (req.session.token) {
-        res.cookie('token', req.session.token);
-        console.log(res);
-        res.json({
-            status: 'session cookie set'
-        });
-    } else {
-        res.cookie('token', '')
-        console.log(res);
-        res.json({
-            status: 'session cookie not set'
-        });
-    }
-});
-
-app.get('/logout', (req, res) => {
-    req.logout();
-    req.session = null;
-    res.redirect('/');
+app.get('/logout', function(request, response){
+    request.logout();
+    request.session = null;
+    response.redirect('/');
 });
 
 //redirect all unknown endpoints to /login
 app.get('*', function(request, response){
-	response.redirect('/login');
+	response.redirect('/auth/google');
 });
 
 server.listen(8080, function() {

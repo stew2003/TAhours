@@ -223,36 +223,6 @@ p{
 	background-color:#ffe5e5;
 }
 
-.userOrPass {
-	display:block;
-    font-family: 'Reem Kufi', sans-serif;
-    padding:15px;
-    width:100%;
-    background:#ececec;
-    color:#111;
-    border:0;
-    font-size:20px;
-    margin-bottom:20px;
-    box-sizing: border-box;
-}
-
-#Yes{
-	float: left;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	padding-left: 80px;
-	padding-right: 80px;
-	background-color: rgb(250, 255, 189);
-}
-
-#No{
-	float: right;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	padding-left: 80px;
-	padding-right: 80px;
-	background-color: rgb(250, 255, 189);
-}
 
 .error{
 	display: inline;
